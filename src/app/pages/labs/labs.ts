@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, signal, Signal } from '@angular/core';
 
 @Component({
   selector: 'app-labs',
@@ -8,29 +8,36 @@ import { Component } from '@angular/core';
   styleUrl: './labs.css'
 })
 export class Labs {
-  titles = 'Hello';
-  tasks = [
-    'Install Angular CLI',
-    'Create project'
-  ];
-
-  name = 'carlitos'
-  age = 21
-
-  disabled = true
-  img = 'https://wpcdn.web.wsu.edu/cahnrs/uploads/sites/4/cat2-1024x676.jpg'
+  welcome = 'Bienvenido a mi primera aplicación con Angular';
+  tasks = signal([
+    'Instalar Angular CLI',
+    'Crear proyecto',
+    'Crear componente',
+    'Crear  servicio',
+  ]);
+  name = signal('Nicolas');
+  age = 18;
+  disabled = true;
+  img = 'https://w3schools.com/howto/img_avatar.png';
 
   person = {
-    name: 'Pedrito',
-    age: 34,
-    avatar: 'https://st3.depositphotos.com/11660552/18285/v/450/depositphotos_182857044-stock-illustration-vector-illustration-of-a-crow.jpg'
+    name: 'Nicolas',
+    age: 18,
+    avatar: 'https://w3schools.com/howto/img_avatar.png'
   }
 
-  clickHandler(){
-    alert('hi')
+  clickHandler() {
+    alert('Hola')
   }
 
-  changeHandler(event: Event){
-    console.log(event);
+  changeHandler(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const newValue = input.value;
+    this.name.set(newValue);
+  }
+
+  keydownHandler(event: KeyboardEvent){
+    const input = event.target as HTMLInputElement;
+    console.log(input.value);
   }
 }
