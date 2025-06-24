@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, Injector, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
@@ -13,18 +13,7 @@ import { Task } from '../../Models/task.model';
   styleUrl: './home.css',
 })
 export class Home {
-  tasks = signal<Task[]>([
-    {
-      id: Date.now(),
-      title: 'Crear proyecto',
-      completed: true
-    },
-    {
-      id: Date.now(),
-      title: 'Crear componenentes',
-      completed: false
-    }
-  ]);
+  tasks = signal<Task[]>([]);
   filter = signal<'all' | 'pending' | 'completed'>('all');
   tasksByFilter = computed(() => {
     const filter = this.filter();
@@ -44,6 +33,24 @@ export class Home {
       Validators.required,
     ]
   });
+
+  injector = inject(Injector);
+
+  ngOnInit() {
+    const storage = localStorage.getItem('tasks');
+    if (storage) {
+      const tasks = JSON.parse(storage);
+      this.tasks.set(tasks);
+    }
+    this.trackTasks();
+  }
+
+  trackTasks() {
+    effect(() => {
+      const tasks = this.tasks();
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }, { injector: this.injector });
+  }
 
   changeHandler() {
     if (this.newTaskCtrl.valid) {
@@ -65,24 +72,19 @@ export class Home {
   }
 
   deleteTask(index: number) {
-    this.tasks.update(state => {
-      const updated = [...state];  // Hacemos una copia
-      updated.splice(index, 1);    // Mutamos la copia
-      return updated;              // La devolvemos
-    });
+    this.tasks.update(prevState =>
+      prevState.filter((_, i) => i !== index)
+    );
   }
 
   updateTask(index: number) {
-    this.tasks.update(state => {
-      const updated = [...state];
-      const currentTask = updated[index];
-      updated[index] = {
-        ...currentTask,
-        completed: !currentTask.completed
-      };
-      return updated;
-    });
+    this.tasks.update(prevState =>
+      prevState.map((task, i) =>
+        i === index ? { ...task, completed: !task.completed } : task
+      )
+    );
   }
+
   updateTaskEditingMode(index: number) {
     this.tasks.update(prevState => {
       return prevState.map((task, position) => {
