@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, Signal } from '@angular/core';
+import { Component, signal} from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-labs',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './labs.html',
   styleUrl: './labs.css',
@@ -24,7 +25,7 @@ export class Labs {
   person = signal({
     name: 'julian',
     age: 5,
-    avatar: 'https://w3schools.com/howto/img_avatar.png',
+    avatar: 'https://w3schools.com/howto/img_avatar.png'
   });
 
   colorCtrl = new FormControl();
@@ -33,17 +34,20 @@ export class Labs {
   });
   nameCtrl = new FormControl('nicolas', {
     nonNullable: true,
-    validators: [Validators.required, Validators.minLength(3)],
+    validators: [
+      Validators.required,
+      Validators.minLength(3)
+    ]
   });
 
   constructor() {
-    this.colorCtrl.valueChanges.subscribe((value) => {
+    this.colorCtrl.valueChanges.subscribe(value => {
       console.log(value);
-    });
+    })
   }
 
   clickHandler() {
-    alert('Hola');
+    alert('Hola')
   }
 
   changeHandler(event: Event) {
@@ -60,22 +64,22 @@ export class Labs {
   changeAge(event: Event) {
     const input = event.target as HTMLInputElement;
     const newValue = input.value;
-    this.person.update((prevState) => {
+    this.person.update(prevState => {
       return {
         ...prevState,
-        age: parseInt(newValue, 10),
-      };
+        age: parseInt(newValue, 10)
+      }
     });
   }
 
   changeName(event: Event) {
     const input = event.target as HTMLInputElement;
     const newValue = input.value;
-    this.person.update((prevState) => {
+    this.person.update(prevState => {
       return {
         ...prevState,
-        name: newValue,
-      };
+        name: newValue
+      }
     });
   }
 }
